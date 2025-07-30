@@ -1,0 +1,142 @@
+<?php
+/** @var $block \AgriCart\GeoFencing\Block\Product\View\GeoPincode */
+$product = $block->getProduct();
+$geoLocation = $product->getData('Geo_Location');
+?>
+<div class="product-geo-checker" style="margin: 20px 0; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
+    <div style="margin-top: 10px;">
+        <label for="pincode-input" style="font-weight: bold; display: block; margin-bottom: 5px;">Check Pincode Availability</label>
+        <div style="display:flex;">
+            <input type="text" id="pincode-input" name="pincode-input" placeholder="Enter 6-digit pincode" style="flex-grow: 1; margin-right: 10px;">
+            <button id="check-pincode" type="button" title="Check" class="action primary">
+                <span>Check</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="pincode-message" style="margin: 10px 0; font-weight: bold; min-height: 20px;"></div>
+    <div id="map" style="height: 300px; width: 100%; margin-top: 15px; display: none; border-radius: 5px;"></div>
+</div>
+
+<script>
+    require([
+        'https://maps.googleapis.com/maps/api/js?key=YOUR_Maps_API_KEY' // IMPORTANT: Replace with your key
+    ], function(){
+        document.addEventListener('DOMContentLoaded', function() {
+            const checkButton = document.getElementById('check-pincode');
+            if (!checkButton) return;
+
+            const productId = "<?= (int)$product->getId() ?>";
+            const inputEl = document.getElementById('pincode-input');
+            const pincodeMessage = document.getElementById('pincode-message');
+            const mapDiv = document.getElementById('map');
+            const geoLocationRaw = "<?= trim($block->escapeHtml($geoLocation)) ?>";
+
+            const checkAvailability = () => {
+                const input = inputEl.value.trim();
+                pincodeMessage.innerHTML = ''; // Clear previous messages
+                mapDiv.style.display = 'none';
+
+                if (!/^\d{6}$/.test(input)) {
+                    pincodeMessage.textContent = "Please enter a valid 6-digit pincode.";
+                    return;
+                }
+
+                pincodeMessage.textContent = 'Checking...';
+                const rawLocations = geoLocationRaw ? geoLocationRaw.toLowerCase().split(',').map(loc => loc.trim()) : [];
+                const postalApiUrl = `https://api.postalpincode.in/pincode/${encodeURIComponent(input)}`;
+
+                fetch(postalApiUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (!data || data[0].Status !== "Success" || !data[0].PostOffice || data[0].PostOffice.length === 0) {
+                            pincodeMessage.innerHTML = '<span style="color: red;">✖ Invalid pincode or location not found.</span>';
+                            return;
+                        }
+
+                        let isAvailable = false;
+                        // If Geo_Location attribute is empty, it is available everywhere.
+                        if (rawLocations.length === 0 || rawLocations.includes('')) {
+                            isAvailable = true;
+                        } else {
+                            const postOfficeInfo = data[0].PostOffice[0];
+                            const district = postOfficeInfo.District.toLowerCase();
+                            const state = postOfficeInfo.State.toLowerCase();
+
+                            isAvailable = rawLocations.some(loc => district.includes(loc) || state.includes(loc));
+                        }
+
+                        localStorage.setItem('lastPincode_' + productId, input);
+
+                        if (isAvailable) {
+                            pincodeMessage.innerHTML = '<span style="color: green;">✔ Product is available at this location.</span>';
+                            mapDiv.style.display = 'block';
+                            initMapWithPincode(input);
+                        } else {
+                            pincodeMessage.innerHTML = '<span style="color: red;">✖ Sorry, this product is not available here.</span>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error fetching from Pincode API:", error);
+                        pincodeMessage.innerHTML = '<span style="color: red;">✖ Error checking availability. Please try again.</span>';
+                    });
+            };
+
+            checkButton.addEventListener('click', checkAvailability);
+            inputEl.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    checkAvailability();
+                }
+            });
+
+            // Check availability for saved pincode on page load
+            const savedPincode = localStorage.getItem('lastPincode_' + productId);
+            if (savedPincode) {
+                inputEl.value = savedPincode;
+                checkAvailability();
+            }
+        });
+
+        function initMapWithPincode(pincode) {
+            let map;
+            try {
+                map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 11,
+                    center: { lat: 20.5937, lng: 78.9629 }, // Default center for India
+                    mapTypeControl: false,
+                    streetViewControl: false
+                });
+            } catch (e) {
+                console.error("Google Maps failed to initialize.", e);
+                return;
+            }
+
+            const osmUrl = `https://nominatim.openstreetmap.org/search?postalcode=${pincode}&country=India&format=json&polygon_geojson=1`;
+
+            fetch(osmUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        const result = data[0];
+                        const location = { lat: parseFloat(result.lat), lng: parseFloat(result.lon) };
+                        map.setCenter(location);
+                        new google.maps.Marker({ map: map, position: location });
+
+                        if (result.geojson) {
+                            const boundary = new google.maps.Data();
+                            boundary.addGeoJson({ type: "Feature", geometry: result.geojson });
+                            boundary.setStyle({
+                                fillColor: '#00BFFF',
+                                strokeColor: '#00BFFF',
+                                strokeWeight: 2,
+                                fillOpacity: 0.20
+                            });
+                            boundary.setMap(map);
+                        }
+                    }
+                })
+                .catch(error => console.error("Error loading pincode polygon:", error));
+        }
+    });
+</script>
