@@ -2,7 +2,17 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="product.info.main">
-            <block class="AgriCart\GeoFencing\Block\Product\View\GeoPincode" name="product.view.geopincode" template="AgriCart_GeoFencing::geo_pincode.phtml" after="product.info.price" />
+            <block class="Magento\Catalog\Block\Product\View" name="product.view.map" template="AgriCart_GeoFencing::product/view/map.phtml" after="product.info.price">
+                <arguments>
+                    <argument name="jsLayout" xsi:type="array">
+                        <item name="components" xsi:type="array">
+                            <item name="geofencing-map" xsi:type="array">
+                                <item name="component" xsi:type="string">AgriCart_GeoFencing/js/map-view</item>
+                            </item>
+                        </item>
+                    </argument>
+                </arguments>
+            </block>
         </referenceContainer>
     </body>
 </page>

@@ -1,0 +1,712 @@
+Index: .idea/.gitignore
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+deleted file mode 100644
+--- a/.idea/.gitignore	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ /dev/null	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
+@@ -1,10 +0,0 @@
+-# Default ignored files
+-/shelf/
+-/workspace.xml
+-# Editor-based HTTP Client requests
+-/httpRequests/
+-# Environment-dependent path to Maven home directory
+-/mavenHomeManager.xml
+-# Datasource local storage ignored files
+-/dataSources/
+-/dataSources.local.xml
+Index: etc/module.xml
+===================================================================
+diff --git a/etc/module.xml b/etc/module.xml
+deleted file mode 100644
+--- a/etc/module.xml	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ /dev/null	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
+@@ -1,5 +0,0 @@
+-<?xml version="1.0"?>
+-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+-    <module name="AgriCart_Hello" setup_version="1.0.2">
+-    </module>
+-</config>
+\ No newline at end of file
+Index: view/frontend/templates/index.phtml
+===================================================================
+diff --git a/view/frontend/templates/index.phtml b/view/frontend/templates/index.phtml
+deleted file mode 100644
+--- a/view/frontend/templates/index.phtml	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ /dev/null	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
+@@ -1,1 +0,0 @@
+-<h2>Welcome to AgriCart.com</h2>
+Index: Helper/Data.php
+===================================================================
+diff --git a/Helper/Data.php b/Helper/Data.php
+deleted file mode 100644
+--- a/Helper/Data.php	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ /dev/null	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
+@@ -1,28 +0,0 @@
+-<?php
+-namespace AgriCart\Hello\Helper;
+-
+-use Magento\Framework\App\Helper\AbstractHelper;
+-use Magento\Store\Model\ScopeInterface;
+-
+-class Data extends AbstractHelper
+-{
+-    const XML_PATH_HELLO = 'hello/general/';
+-
+-    public function isEnabled($storeId = null)
+-    {
+-        return $this->scopeConfig->isSetFlag(
+-            self::XML_PATH_HELLO . 'enable',
+-            ScopeInterface::SCOPE_STORE,
+-            $storeId
+-        );
+-    }
+-
+-    public function getGreetingText($storeId = null)
+-    {
+-        return $this->scopeConfig->getValue(
+-            self::XML_PATH_HELLO . 'greeting_text',
+-            ScopeInterface::SCOPE_STORE,
+-            $storeId
+-        );
+-    }
+-}
+\ No newline at end of file
+Index: Controller/Index/Index.php
+===================================================================
+diff --git a/Controller/Index/Index.php b/Controller/Index/Index.php
+deleted file mode 100644
+--- a/Controller/Index/Index.php	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ /dev/null	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
+@@ -1,20 +0,0 @@
+-<?php
+-namespace AgriCart\Hello\Controller\Index;
+-
+-class Index extends \Magento\Framework\App\Action\Action
+-{
+-    protected $_pageFactory;
+-
+-    public function __construct(
+-        \Magento\Framework\App\Action\Context $context,
+-        \Magento\Framework\View\Result\PageFactory $pageFactory
+-    ) {
+-        $this->_pageFactory = $pageFactory;
+-        return parent::__construct($context);
+-    }
+-
+-    public function execute()
+-    {
+-        return $this->_pageFactory->create();
+-    }
+-}
+\ No newline at end of file
+Index: Controller/Index/Config.php
+===================================================================
+diff --git a/Controller/Index/Config.php b/Controller/Index/Config.php
+deleted file mode 100644
+--- a/Controller/Index/Config.php	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ /dev/null	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
+@@ -1,36 +0,0 @@
+-<?php
+-namespace AgriCart\Hello\Controller\Index;
+-
+-use Magento\Framework\App\Action\Action;
+-use Magento\Framework\App\Action\Context;
+-use Magento\Framework\App\ResponseInterface;
+-use Magento\Framework\View\Result\PageFactory;
+-use AgriCart\Hello\Helper\Data as HelperData;
+-
+-class Config extends Action
+-{
+-    protected $helperData;
+-    protected $resultPageFactory;
+-
+-    public function __construct(
+-        Context $context,
+-        PageFactory $resultPageFactory,
+-        HelperData $helperData
+-    ) {
+-        $this->resultPageFactory = $resultPageFactory;
+-        $this->helperData = $helperData;
+-        parent::__construct($context);
+-    }
+-
+-    public function execute()
+-    {
+-        // To test the helper, you can echo the config values.
+-        // In a real scenario, you'd pass this to a block.
+-        if ($this->helperData->isEnabled()) {
+-            echo $this->helperData->getGreetingText();
+-        } else {
+-            echo "Module is disabled.";
+-        }
+-        exit; // We use exit here for simple debugging.
+-    }
+-}
+\ No newline at end of file
+Index: Block/Index.php
+===================================================================
+diff --git a/Block/Index.php b/Block/Index.php
+deleted file mode 100644
+--- a/Block/Index.php	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ /dev/null	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
+@@ -1,6 +0,0 @@
+-<?php
+-namespace AgriCart\Hello\Block;
+-class Index extends \Magento\Framework\View\Element\Template
+-{
+-
+-}
+\ No newline at end of file
+Index: etc/config.xml
+===================================================================
+diff --git a/etc/config.xml b/etc/config.xml
+deleted file mode 100644
+--- a/etc/config.xml	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ /dev/null	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
+@@ -1,11 +0,0 @@
+-<?xml version="1.0"?>
+-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+-    <default>
+-        <Hello>
+-            <general>
+-                <enable>1</enable>
+-                <display_text>Hello</display_text>
+-            </general>
+-        </Hello>
+-    </default>
+-</config>
+Index: view/frontend/layout/hello_index_index.xml
+===================================================================
+diff --git a/view/frontend/layout/hello_index_index.xml b/view/frontend/layout/hello_index_index.xml
+deleted file mode 100644
+--- a/view/frontend/layout/hello_index_index.xml	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ /dev/null	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
+@@ -1,6 +0,0 @@
+-<?xml version="1.0"?>
+-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+-    <referenceContainer name="content">
+-        <block class="AgriCart\Hello\Block\Index" name="hello_index_index" template="AgriCart_Hello::index.phtml" />
+-    </referenceContainer>
+-</page>
+\ No newline at end of file
+Index: registration.php
+===================================================================
+diff --git a/registration.php b/registration.php
+deleted file mode 100644
+--- a/registration.php	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ /dev/null	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
+@@ -1,6 +0,0 @@
+-<?php
+-\Magento\Framework\Component\ComponentRegistrar::register(
+-    \Magento\Framework\Component\ComponentRegistrar::MODULE,
+-    'AgriCart_Hello',
+-    __DIR__
+-);
+\ No newline at end of file
+Index: .idea/Hello module.iml
+===================================================================
+diff --git a/.idea/Hello module.iml b/.idea/Hello module.iml
+deleted file mode 100644
+--- a/.idea/Hello module.iml	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ /dev/null	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
+@@ -1,9 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<module type="JAVA_MODULE" version="4">
+-  <component name="NewModuleRootManager" inherit-compiler-output="true">
+-    <exclude-output />
+-    <content url="file://$MODULE_DIR$" />
+-    <orderEntry type="inheritedJdk" />
+-    <orderEntry type="sourceFolder" forTests="false" />
+-  </component>
+-</module>
+\ No newline at end of file
+Index: etc/frontend/routes.xml
+===================================================================
+diff --git a/etc/frontend/routes.xml b/etc/frontend/routes.xml
+deleted file mode 100644
+--- a/etc/frontend/routes.xml	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ /dev/null	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
+@@ -1,8 +0,0 @@
+-<?xml version="1.0" ?>
+-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+-    <router id="standard">
+-        <route frontName="Hello" id="Hello">
+-            <module name="AgriCart_Hello"/>
+-        </route>
+-    </router>
+-</config>
+\ No newline at end of file
+Index: etc/adminhtml/system.xml
+===================================================================
+diff --git a/etc/adminhtml/system.xml b/etc/adminhtml/system.xml
+deleted file mode 100644
+--- a/etc/adminhtml/system.xml	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ /dev/null	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
+@@ -1,25 +0,0 @@
+-<?xml version="1.0"?>
+-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+-    <system>
+-        <tab id="agricart" translate="label" sortOrder="100">
+-            <label>AgriCart</label>
+-        </tab>
+-        <section id="hello" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+-            <class>separator-top</class>
+-            <label>Hello World Settings</label>
+-            <tab>agricart</tab>
+-            <resource>AgriCart_Hello::hello_config</resource>
+-            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+-                <label>General Settings</label>
+-                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+-                    <label>Enable Module</label>
+-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+-                </field>
+-                <field id="greeting_text" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+-                    <label>Greeting Text</label>
+-                    <comment>This text will be displayed on the frontend.</comment>
+-                </field>
+-            </group>
+-        </section>
+-    </system>
+-</config>
+\ No newline at end of file
+Index: GeoFencing/view/frontend/templates/geo_pincode.phtml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/GeoFencing/view/frontend/templates/geo_pincode.phtml b/GeoFencing/view/frontend/templates/geo_pincode.phtml
+new file mode 100644
+--- /dev/null	(date 1753894639868)
++++ b/GeoFencing/view/frontend/templates/geo_pincode.phtml	(date 1753894639868)
+@@ -0,0 +1,142 @@
++<?php
++/** @var $block \AgriCart\GeoFencing\Block\Product\View\GeoPincode */
++$product = $block->getProduct();
++$geoLocation = $product->getData('Geo_Location');
++?>
++<div class="product-geo-checker" style="margin: 20px 0; border: 1px solid #ddd; padding: 15px; border-radius: 5px;">
++    <div style="margin-top: 10px;">
++        <label for="pincode-input" style="font-weight: bold; display: block; margin-bottom: 5px;">Check Pincode Availability</label>
++        <div style="display:flex;">
++            <input type="text" id="pincode-input" name="pincode-input" placeholder="Enter 6-digit pincode" style="flex-grow: 1; margin-right: 10px;">
++            <button id="check-pincode" type="button" title="Check" class="action primary">
++                <span>Check</span>
++            </button>
++        </div>
++    </div>
++
++    <div id="pincode-message" style="margin: 10px 0; font-weight: bold; min-height: 20px;"></div>
++    <div id="map" style="height: 300px; width: 100%; margin-top: 15px; display: none; border-radius: 5px;"></div>
++</div>
++
++<script>
++    require([
++        'https://maps.googleapis.com/maps/api/js?key=YOUR_Maps_API_KEY' // IMPORTANT: Replace with your key
++    ], function(){
++        document.addEventListener('DOMContentLoaded', function() {
++            const checkButton = document.getElementById('check-pincode');
++            if (!checkButton) return;
++
++            const productId = "<?= (int)$product->getId() ?>";
++            const inputEl = document.getElementById('pincode-input');
++            const pincodeMessage = document.getElementById('pincode-message');
++            const mapDiv = document.getElementById('map');
++            const geoLocationRaw = "<?= trim($block->escapeHtml($geoLocation)) ?>";
++
++            const checkAvailability = () => {
++                const input = inputEl.value.trim();
++                pincodeMessage.innerHTML = ''; // Clear previous messages
++                mapDiv.style.display = 'none';
++
++                if (!/^\d{6}$/.test(input)) {
++                    pincodeMessage.textContent = "Please enter a valid 6-digit pincode.";
++                    return;
++                }
++
++                pincodeMessage.textContent = 'Checking...';
++                const rawLocations = geoLocationRaw ? geoLocationRaw.toLowerCase().split(',').map(loc => loc.trim()) : [];
++                const postalApiUrl = `https://api.postalpincode.in/pincode/${encodeURIComponent(input)}`;
++
++                fetch(postalApiUrl)
++                    .then(response => response.json())
++                    .then(data => {
++                        if (!data || data[0].Status !== "Success" || !data[0].PostOffice || data[0].PostOffice.length === 0) {
++                            pincodeMessage.innerHTML = '<span style="color: red;">✖ Invalid pincode or location not found.</span>';
++                            return;
++                        }
++
++                        let isAvailable = false;
++                        // If Geo_Location attribute is empty, it is available everywhere.
++                        if (rawLocations.length === 0 || rawLocations.includes('')) {
++                            isAvailable = true;
++                        } else {
++                            const postOfficeInfo = data[0].PostOffice[0];
++                            const district = postOfficeInfo.District.toLowerCase();
++                            const state = postOfficeInfo.State.toLowerCase();
++
++                            isAvailable = rawLocations.some(loc => district.includes(loc) || state.includes(loc));
++                        }
++
++                        localStorage.setItem('lastPincode_' + productId, input);
++
++                        if (isAvailable) {
++                            pincodeMessage.innerHTML = '<span style="color: green;">✔ Product is available at this location.</span>';
++                            mapDiv.style.display = 'block';
++                            initMapWithPincode(input);
++                        } else {
++                            pincodeMessage.innerHTML = '<span style="color: red;">✖ Sorry, this product is not available here.</span>';
++                        }
++                    })
++                    .catch(error => {
++                        console.error("Error fetching from Pincode API:", error);
++                        pincodeMessage.innerHTML = '<span style="color: red;">✖ Error checking availability. Please try again.</span>';
++                    });
++            };
++
++            checkButton.addEventListener('click', checkAvailability);
++            inputEl.addEventListener('keypress', function(event) {
++                if (event.key === 'Enter') {
++                    event.preventDefault();
++                    checkAvailability();
++                }
++            });
++
++            // Check availability for saved pincode on page load
++            const savedPincode = localStorage.getItem('lastPincode_' + productId);
++            if (savedPincode) {
++                inputEl.value = savedPincode;
++                checkAvailability();
++            }
++        });
++
++        function initMapWithPincode(pincode) {
++            let map;
++            try {
++                map = new google.maps.Map(document.getElementById('map'), {
++                    zoom: 11,
++                    center: { lat: 20.5937, lng: 78.9629 }, // Default center for India
++                    mapTypeControl: false,
++                    streetViewControl: false
++                });
++            } catch (e) {
++                console.error("Google Maps failed to initialize.", e);
++                return;
++            }
++
++            const osmUrl = `https://nominatim.openstreetmap.org/search?postalcode=${pincode}&country=India&format=json&polygon_geojson=1`;
++
++            fetch(osmUrl)
++                .then(res => res.json())
++                .then(data => {
++                    if (data.length > 0) {
++                        const result = data[0];
++                        const location = { lat: parseFloat(result.lat), lng: parseFloat(result.lon) };
++                        map.setCenter(location);
++                        new google.maps.Marker({ map: map, position: location });
++
++                        if (result.geojson) {
++                            const boundary = new google.maps.Data();
++                            boundary.addGeoJson({ type: "Feature", geometry: result.geojson });
++                            boundary.setStyle({
++                                fillColor: '#00BFFF',
++                                strokeColor: '#00BFFF',
++                                strokeWeight: 2,
++                                fillOpacity: 0.20
++                            });
++                            boundary.setMap(map);
++                        }
++                    }
++                })
++                .catch(error => console.error("Error loading pincode polygon:", error));
++        }
++    });
++</script>
+\ No newline at end of file
+Index: GeoFencing/view/frontend/layout/catalog_product_view.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/GeoFencing/view/frontend/layout/catalog_product_view.xml b/GeoFencing/view/frontend/layout/catalog_product_view.xml
+new file mode 100644
+--- /dev/null	(date 1753894610010)
++++ b/GeoFencing/view/frontend/layout/catalog_product_view.xml	(date 1753894610010)
+@@ -0,0 +1,8 @@
++<?xml version="1.0"?>
++<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
++    <body>
++        <referenceContainer name="product.info.main">
++            <block class="AgriCart\GeoFencing\Block\Product\View\GeoPincode" name="product.view.geopincode" template="AgriCart_GeoFencing::geo_pincode.phtml" after="product.info.price" />
++        </referenceContainer>
++    </body>
++</page>
+\ No newline at end of file
+Index: .idea/modules.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ProjectModuleManager\">\r\n    <modules>\r\n      <module fileurl=\"file://$PROJECT_DIR$/.idea/Hello module.iml\" filepath=\"$PROJECT_DIR$/.idea/Hello module.iml\" />\r\n    </modules>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/modules.xml b/.idea/modules.xml
+--- a/.idea/modules.xml	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ b/.idea/modules.xml	(date 1753893835449)
+@@ -2,7 +2,7 @@
+ <project version="4">
+   <component name="ProjectModuleManager">
+     <modules>
+-      <module fileurl="file://$PROJECT_DIR$/.idea/Hello module.iml" filepath="$PROJECT_DIR$/.idea/Hello module.iml" />
++      <module fileurl="file://$PROJECT_DIR$/Hello Module.iml" filepath="$PROJECT_DIR$/Hello Module.iml" />
+     </modules>
+   </component>
+ </project>
+\ No newline at end of file
+Index: Hello Module.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Hello Module.iml b/Hello Module.iml
+new file mode 100644
+--- /dev/null	(date 1753893835446)
++++ b/Hello Module.iml	(date 1753893835446)
+@@ -0,0 +1,11 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="JAVA_MODULE" version="4">
++  <component name="NewModuleRootManager" inherit-compiler-output="true">
++    <exclude-output />
++    <content url="file://$MODULE_DIR$">
++      <sourceFolder url="file://$MODULE_DIR$/GeoFencing/" isTestSource="false" packagePrefix="Vendor\GeoPincode\" />
++    </content>
++    <orderEntry type="inheritedJdk" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++</module>
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"VcsDirectoryMappings\">\r\n    <mapping directory=\"$PROJECT_DIR$\" vcs=\"Git\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+--- a/.idea/vcs.xml	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ b/.idea/vcs.xml	(date 1753893835456)
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="VcsDirectoryMappings">
+-    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++    <mapping directory="" vcs="Git" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: Hello/.idea/Hello module.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Hello/.idea/Hello module.iml b/Hello/.idea/Hello module.iml
+new file mode 100644
+--- /dev/null	(date 1753810506637)
++++ b/Hello/.idea/Hello module.iml	(date 1753810506637)
+@@ -0,0 +1,9 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module type="JAVA_MODULE" version="4">
++  <component name="NewModuleRootManager" inherit-compiler-output="true">
++    <exclude-output />
++    <content url="file://$MODULE_DIR$" />
++    <orderEntry type="inheritedJdk" />
++    <orderEntry type="sourceFolder" forTests="false" />
++  </component>
++</module>
+\ No newline at end of file
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ProjectRootManager\" version=\"2\" languageLevel=\"JDK_24\" project-jdk-name=\"openjdk-24\" project-jdk-type=\"JavaSDK\">\r\n    <output url=\"file://$PROJECT_DIR$/out\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision 58b582b6d655f2b3cfd48be4949b36cede5e143f)
++++ b/.idea/misc.xml	(date 1753893835452)
+@@ -1,6 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+-  <component name="ProjectRootManager" version="2" languageLevel="JDK_24" project-jdk-name="openjdk-24" project-jdk-type="JavaSDK">
++  <component name="ProjectRootManager">
+     <output url="file://$PROJECT_DIR$/out" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: GeoFencing/registration.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/GeoFencing/registration.php b/GeoFencing/registration.php
+new file mode 100644
+--- /dev/null	(date 1753894468334)
++++ b/GeoFencing/registration.php	(date 1753894468334)
+@@ -0,0 +1,15 @@
++<?php
++/**
++ * AgriCart Software.
++ *
++ * @category  AgriCart
++ * @package   AgriCart_GeoFencing
++ * @author    AgriCart Software
++ * @copyright Copyright (c) 2024 AgriCart Software
++ */
++
++\Magento\Framework\Component\ComponentRegistrar::register(
++    \Magento\Framework\Component\ComponentRegistrar::MODULE,
++    'AgriCart_GeoFencing',
++    __DIR__
++);
+\ No newline at end of file
+Index: GeoFencing/etc/frontend/csp_whitelist.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/GeoFencing/etc/frontend/csp_whitelist.xml b/GeoFencing/etc/frontend/csp_whitelist.xml
+new file mode 100644
+--- /dev/null	(date 1753894541238)
++++ b/GeoFencing/etc/frontend/csp_whitelist.xml	(date 1753894541238)
+@@ -0,0 +1,23 @@
++<?xml version="1.0"?>
++<csp_whitelist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
++               xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp:etc/csp_whitelist.xsd">
++    <policies>
++        <policy id="script-src">
++            <values>
++                <value id="google-maps-api" type="host">maps.googleapis.com</value>
++            </values>
++        </policy>
++        <policy id="connect-src">
++            <values>
++                <value id="postalpincode-api" type="host">https://api.postalpincode.in</value>
++                <value id="openstreetmap-api" type="host">https://nominatim.openstreetmap.org</value>
++            </values>
++        </policy>
++        <policy id="img-src">
++            <values>
++                <value id="google-maps-images" type="host">maps.gstatic.com</value>
++                <value id="google-maps-khms" type="host">khms.google.com</value>
++            </values>
++        </policy>
++    </policies>
++</csp_whitelist>
+\ No newline at end of file
+Index: GeoFencing/Block/Product/view/GeoPincode.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/GeoFencing/Block/Product/view/GeoPincode.php b/GeoFencing/Block/Product/view/GeoPincode.php
+new file mode 100644
+--- /dev/null	(date 1753894584551)
++++ b/GeoFencing/Block/Product/view/GeoPincode.php	(date 1753894584551)
+@@ -0,0 +1,24 @@
++<?php
++namespace AgriCart\GeoFencing\Block\Product\View;
++
++use Magento\Framework\View\Element\Template;
++use Magento\Framework\Registry;
++
++class GeoPincode extends Template
++{
++    protected $_coreRegistry;
++
++    public function __construct(
++        Template\Context $context,
++        Registry $registry,
++        array $data = []
++    ) {
++        $this->_coreRegistry = $registry;
++        parent::__construct($context, $data);
++    }
++
++    public function getProduct()
++    {
++        return $this->_coreRegistry->registry('product');
++    }
++}
+\ No newline at end of file
+Index: GeoFencing/Setup/Patch/Data/CustomAttribute.php
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/GeoFencing/Setup/Patch/Data/CustomAttribute.php b/GeoFencing/Setup/Patch/Data/CustomAttribute.php
+new file mode 100644
+--- /dev/null	(date 1753894565542)
++++ b/GeoFencing/Setup/Patch/Data/CustomAttribute.php	(date 1753894565542)
+@@ -0,0 +1,60 @@
++<?php
++namespace AgriCart\GeoFencing\Setup\Patch\Data;
++
++use Magento\Eav\Setup\EavSetupFactory;
++use Magento\Framework\Setup\ModuleDataSetupInterface;
++use Magento\Framework\Setup\Patch\DataPatchInterface;
++use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
++use Magento\Catalog\Model\Product;
++
++class CustomAttribute implements DataPatchInterface
++{
++    private $moduleDataSetup;
++    private $eavSetupFactory;
++
++    public function __construct(
++        ModuleDataSetupInterface $moduleDataSetup,
++        EavSetupFactory $eavSetupFactory
++    ) {
++        $this->moduleDataSetup = $moduleDataSetup;
++        $this->eavSetupFactory = $eavSetupFactory;
++    }
++
++    public function apply()
++    {
++        $this->moduleDataSetup->getConnection()->startSetup();
++        $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
++
++        $eavSetup->addAttribute(Product::ENTITY, 'Geo_Location', [
++            'type' => 'text',
++            'label' => 'Geo Service Locations',
++            'input' => 'textarea',
++            'global' => ScopedAttributeInterface::SCOPE_GLOBAL,
++            'visible' => true,
++            'required' => false,
++            'user_defined' => true,
++            'default' => '',
++            'searchable' => false,
++            'filterable' => false,
++            'comparable' => false,
++            'visible_on_front' => false, // No need to show this raw data on the frontend
++            'used_in_product_listing' => true,
++            'unique' => false,
++            'apply_to' => '',
++            'group' => 'General',
++            'note' => 'Enter comma-separated locations (e.g., Bangalore, Mumbai, Delhi). If left empty, the product will be available for all pincodes.',
++        ]);
++
++        $this->moduleDataSetup->getConnection()->endSetup();
++    }
++
++    public static function getDependencies()
++    {
++        return [];
++    }
++
++    public function getAliases()
++    {
++        return [];
++    }
++}
+\ No newline at end of file
+diff --git a/Controller/Index/test.php b/Controller/Index/test.php
+deleted file mode 100644

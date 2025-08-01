@@ -1,23 +1,15 @@
 <?xml version="1.0"?>
-<csp_whitelist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-               xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp:etc/csp_whitelist.xsd">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp:etc/csp_whitelist.xsd">
     <policies>
         <policy id="script-src">
             <values>
-                <value id="google-maps-api" type="host">maps.googleapis.com</value>
+                <value id="google-maps" type="host">maps.googleapis.com</value>
             </values>
         </policy>
-        <policy id="connect-src">
+        <policy id="frame-src">
             <values>
-                <value id="postalpincode-api" type="host">https://api.postalpincode.in</value>
-                <value id="openstreetmap-api" type="host">https://nominatim.openstreetmap.org</value>
-            </values>
-        </policy>
-        <policy id="img-src">
-            <values>
-                <value id="google-maps-images" type="host">maps.gstatic.com</value>
-                <value id="google-maps-khms" type="host">khms.google.com</value>
+                <value id="google-maps" type="host">www.google.com</value>
             </values>
         </policy>
     </policies>
-</csp_whitelist>
+</config>

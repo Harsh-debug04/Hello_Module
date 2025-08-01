@@ -1,0 +1,35 @@
+<?php
+/**
+ * AgriCart GeoFencing Module
+ *
+ * @category    AgriCart
+ * @package     AgriCart_GeoFencing
+ * @author      AgriCart
+ * @copyright   Copyright (c) 2025 AgriCart
+ */
+
+/** @var \Magento\Catalog\Block\Product\View $block */
+/** @var \AgriCart\GeoFencing\Helper\Data $helper */
+$helper = $this->helper(\AgriCart\GeoFencing\Helper\Data::class);
+
+/** @var \Magento\Catalog\Model\Product $product */
+$product = $block->getProduct();
+$geoLocation = $product->getGeoLocation();
+?>
+
+<?php if ($helper->isEnabled() && $helper->isShowMap() && $geoLocation): ?>
+    <div class="geofencing-map-wrapper">
+        <div id="geofencing-map-container" style="height: 400px; width: 100%; margin-top: 20px;"></div>
+    </div>
+    <script type="text/x-magento-init">
+    {
+        "#geofencing-map-container": {
+            "AgriCart_GeoFencing/js/map-view": {
+                "apiKey": "<?= $block->escapeHtmlAttr($helper->getGoogleApiKey()) ?>",
+                "location": "<?= $block->escapeJs($geoLocation) ?>",
+                "radius": <?= (int)$helper->getFenceRadius() ?>
+            }
+        }
+    }
+    </script>
+<?php endif; ?>
