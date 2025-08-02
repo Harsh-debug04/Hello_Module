@@ -16,7 +16,7 @@ use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
 
-class GeoLocationAttribute implements DataPatchInterface
+class AddEnableGeofencingAttribute implements DataPatchInterface
 {
     private $moduleDataSetup;
     private $eavSetupFactory;
@@ -36,30 +36,30 @@ class GeoLocationAttribute implements DataPatchInterface
     {
         /** @var EavSetup $eavSetup */
         $eavSetup = $this->eavSetupFactory->create(['setup' => $this->moduleDataSetup]);
-
         $eavSetup->addAttribute(
             Product::ENTITY,
-            'geo_location',
+            'geofencing_enable',
             [
-                'type' => 'varchar',
-                'label' => 'Geo Location',
-                'input' => 'text',
+                'type' => 'int',
+                'label' => 'Enable GeoFencing',
+                'input' => 'boolean', // Creates a Yes/No toggle
+                'source' => \Magento\Eav\Model\Entity\Attribute\Source\Boolean::class,
                 'global' => ScopedAttributeInterface::SCOPE_GLOBAL,
                 'visible' => true,
                 'required' => false,
                 'user_defined' => true,
-                'default' => '',
+                'default' => '0',
                 'searchable' => false,
                 'filterable' => false,
                 'comparable' => false,
-                'visible_on_front' => true,
-                'used_in_product_listing' => true,
+                'visible_on_front' => false,
+                'used_in_product_listing' => false,
                 'unique' => false,
                 'apply_to' => '',
-                'group' => 'General',
+                'group' => 'General', // Places the attribute in the 'General' tab
                 'is_used_in_grid' => true,
                 'is_visible_in_grid' => true,
-                'is_filterable_in_grid' => true,
+                'is_filterable_in_grid' => true
             ]
         );
     }
@@ -69,8 +69,7 @@ class GeoLocationAttribute implements DataPatchInterface
      */
     public static function getDependencies()
     {
-        // This dependency ensures the 'geofencing_enable' attribute is created first.
-        return [AddEnableGeofencingAttribute::class];
+        return [];
     }
 
     /**

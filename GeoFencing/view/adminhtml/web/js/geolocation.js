@@ -1,66 +1,57 @@
 define([
     'jquery',
-    'uiComponent'
-], function ($, Component) {
+    'uiComponent',
+    'Magento_Ui/js/lib/view/utils/async'
+], function ($, Component, async) {
     'use strict';
 
     return Component.extend({
         defaults: {
-            apiKey: '' // This will be populated by the layout XML configuration
+            apiKey: '',
+            inputSelector: 'input[name="product[geo_location]"]'
         },
 
         initialize: function () {
             this._super();
             var self = this;
 
-            // Do not proceed if the API key is missing.
             if (!this.apiKey) {
-                console.error('AgriCart_GeoFencing: Google API Key is missing. Please configure it in the admin panel.');
+                console.error('AgriCart_GeoFencing: Google API Key is missing. Autocomplete is disabled.');
                 return;
             }
 
-            // Dynamically load the Google Maps script using the API key from the component's configuration.
-            // Using requirejs's async loader ensures we don't try to use `google` before it's ready.
-            require(['async!https://maps.googleapis.com/maps/api/js?key=' + this.apiKey + '&libraries=places'], function () {
-                // Now that the script is loaded, find the input field and initialize autocomplete.
-                // We use an interval to make sure the UI component has rendered the field.
-                var interval = setInterval(function () {
-                    var input = document.querySelector('input[name="product[geo_location]"]');
-                    if (input) {
-                        clearInterval(interval);
-                        self.initAutocomplete(input);
-                    }
-                }, 500);
+            // This reliably waits for the input field to be rendered on the page.
+            async(this.inputSelector, function (input) {
+                // Load the Google Maps script only when the input is ready.
+                require(['async!https://maps.googleapis.com/maps/api/js?key=' + self.apiKey + '&libraries=places'], function () {
+                    self.initAutocomplete(input);
+                });
             });
         },
 
         initAutocomplete: function (input) {
             var autocomplete = new google.maps.places.Autocomplete(input);
-            autocomplete.setFields(['address_components', 'geometry', 'icon', 'name']);
+            autocomplete.setFields(['name', 'geometry']);
+            var validated = false; // Flag to track if a valid place was selected.
 
             autocomplete.addListener('place_changed', function () {
                 var place = autocomplete.getPlace();
-                // Ensure the user selected a valid place from the suggestions.
-                if (place.geometry) {
-                    var location = place.geometry.location;
-                    // Mark the input as validated.
-                    input.setAttribute('data-validated', 'true');
-                    // Format the value to be saved.
-                    input.value = place.name + ' (' + location.lat() + ', ' + location.lng() + ')';
-                    // Trigger a change event for Magento's UI component to recognize the new value.
+                if (place.geometry && place.geometry.location) {
+                    var loc = place.geometry.location;
+                    // Format the value consistently: "Place Name (latitude, longitude)"
+                    input.value = place.name + ' (' + loc.lat() + ', ' + loc.lng() + ')';
+                    validated = true;
+                    // Notify Magento's UI components of the change.
                     $(input).trigger('change');
-                } else {
-                    input.setAttribute('data-validated', 'false');
                 }
             });
 
-            // If the user manually changes the input after selecting a valid place, mark it as unvalidated.
-            $(input).on('change', function () {
-                if ($(this).attr('data-validated') !== 'true') {
-                    // Logic to handle un-validated input if needed, e.g., clear the field or show a warning.
+            // If the user manually types in the field after selecting a place,
+            // reset the validation flag.
+            $(input).on('input', function () {
+                if (validated) {
+                    validated = false;
                 }
-                // Reset the validation status on any manual change.
-                $(this).attr('data-validated', 'false');
             });
         }
     });
